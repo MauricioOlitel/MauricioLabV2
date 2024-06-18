@@ -416,7 +416,7 @@
       },
       "branding": {
         "enabled": true,
-        "custom_logo_url": "{{serverless.url}}/logo.png",
+        "custom_logo_url": "{{serverless.url}}/logoV2.eps",
         "use_custom_colors": true,
         "custom_colors": {
           "main_header_background": "rgb(0, 114, 206)",
