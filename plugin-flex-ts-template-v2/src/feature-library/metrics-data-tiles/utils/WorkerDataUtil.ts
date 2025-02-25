@@ -1,3 +1,4 @@
+import { ITask, Manager } from '@twilio/flex-ui';
 import { TeamActivityCounts, TeamTaskCounts } from '../types';
 
 const _manager = Manager.getInstance();
@@ -9,7 +10,8 @@ const TASK_CHANNEL_VOICE = 'voice';
 export function getAgentStatusCounts(workers: any[] = [], teams: string[] = []) {
   const ac: TeamActivityCounts = {};
   ac.All = { teamName: 'All', totalAgentCount: 0, activities: { Idle: 0, Busy: 0 } };
-  ac.Other = { teamName: 'Other', totalAgentCount: 0, activities: { Idle: 0, Busy: 0 } };
+  // Alteramos o nome exibido para "Não atribuído"
+  ac.Other = { teamName: 'Não atribuído', totalAgentCount: 0, activities: { Idle: 0, Busy: 0 } };
   // Init activity counts
   teams.forEach((team) => {
     ac[team] = { teamName: team, totalAgentCount: 0, activities: { Idle: 0, Busy: 0 } };
@@ -60,7 +62,8 @@ export function getTasksByTeamCounts(workers: any[] = [], teams: string[] = []) 
   const taskCounts: TeamTaskCounts = {};
   const initTasks = { voice_inbound: 0, voice_outbound: 0, sms: 0, chat: 0, video: 0 };
   taskCounts.All = { teamName: 'All', totalTaskCount: 0, tasks: { ...initTasks } };
-  taskCounts.Other = { teamName: 'Other', totalTaskCount: 0, tasks: { ...initTasks } };
+  // Alteramos o nome exibido para "Não atribuído"
+  taskCounts.Other = { teamName: 'Não atribuído', totalTaskCount: 0, tasks: { ...initTasks } };
 
   // Init task counts
   teams.forEach((team) => {
@@ -74,7 +77,7 @@ export function getTasksByTeamCounts(workers: any[] = [], teams: string[] = []) 
     const tasks = wk?.tasks || [];
     tasks.forEach((task: ITask) => {
       if (task.taskChannelUniqueName === TASK_CHANNEL_VOICE) {
-        channel = voice_${task.attributes?.direction || 'inbound'};
+        channel = `voice_${task.attributes?.direction || 'inbound'}`;
       } else {
         channel = task.taskChannelUniqueName;
       }
