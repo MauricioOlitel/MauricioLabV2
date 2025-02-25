@@ -1,3 +1,5 @@
+import { ITask, Manager } from '@twilio/flex-ui';
+
 import { TeamActivityCounts, TeamTaskCounts } from '../types';
 
 const _manager = Manager.getInstance();
