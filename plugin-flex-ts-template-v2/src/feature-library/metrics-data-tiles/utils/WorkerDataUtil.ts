@@ -76,7 +76,7 @@ export function getTasksByTeamCounts(workers: any[] = [], teams: string[] = []) 
     const tasks = wk?.tasks || [];
     tasks.forEach((task: ITask) => {
       if (task.taskChannelUniqueName === TASK_CHANNEL_VOICE) {
-        channel = voice_${task.attributes?.direction || 'inbound'};
+       channel = `voice_${task.attributes?.direction || 'inbound'}`;
       } else {
         channel = task.taskChannelUniqueName;
       }
