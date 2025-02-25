@@ -11,7 +11,7 @@ const TASK_CHANNEL_VOICE = 'voice';
 export function getAgentStatusCounts(workers: any[] = [], teams: string[] = []) {
   const ac: TeamActivityCounts = {};
   ac.All = { teamName: 'All', totalAgentCount: 0, activities: { Idle: 0, Busy: 0 } };
-  ac.Other = { teamName: 'Other', totalAgentCount: 0, activities: { Idle: 0, Busy: 0 } };
+  ac.Other = { teamName: 'Não atribuido', totalAgentCount: 0, activities: { Idle: 0, Busy: 0 } };
   // Init activity counts
   teams.forEach((team) => {
     ac[team] = { teamName: team, totalAgentCount: 0, activities: { Idle: 0, Busy: 0 } };
