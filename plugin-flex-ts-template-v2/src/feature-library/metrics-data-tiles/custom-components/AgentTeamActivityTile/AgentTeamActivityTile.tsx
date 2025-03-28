@@ -26,7 +26,7 @@ const AgentTeamActivityTile = () => {
 
   return (
     <TeamTileWrapper className="Twilio-AggregatedDataTile">
-      <Box overflowY="auto" maxHeight="400px">
+      <Box overflowY="auto" maxHeight="500px">
         <Table variant="borderless">
           <THead stickyHeader top={0} element="STICKY_HEADER">
             <Tr key="headerRow">
