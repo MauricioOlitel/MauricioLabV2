@@ -9,8 +9,8 @@ import { CallOutgoingIcon } from '@twilio-paste/icons/esm/CallOutgoingIcon';
 import { SMSIcon } from '@twilio-paste/icons/esm/SMSIcon';
 import { ChatIcon } from '@twilio-paste/icons/esm/ChatIcon';
 
-import { StringTemplates } from '../../flex-hooks/strings/strings';
-import { HistoricalContact } from '../../types/types';
+import { StringTemplates } from '../../flex-hooks/strings';
+import { HistoricalContact } from '../../types';
 import NotesPopover from '../NotesPopover';
 import OutboundCallModal from '../OutboundCallModal';
 

@@ -1,7 +1,6 @@
 import * as Flex from '@twilio/flex-ui';
 
 import { FeatureDefinition } from '../../types/feature-loader';
-import { addLoadedFeature, setLoadedFeaturesPopulated } from '../configuration';
 import * as Actions from './actions';
 import * as Channels from './channels';
 import * as ChatOrchestrator from './chat-orchestrator';
@@ -9,8 +8,6 @@ import * as Components from './components';
 import * as CssOverrides from './css-overrides';
 import * as Events from './events';
 import * as JsClientEvents from './jsclient-event-listeners';
-import * as KeyboardShortcuts from './keyboard-shortcuts';
-import * as Logger from './logger';
 import * as Notifications from './notifications';
 import * as NotificationEvents from './notification-events';
 import * as PasteElements from './paste-elements';
@@ -19,14 +16,11 @@ import * as Strings from './strings';
 import * as TeamsFilters from './teams-filters';
 import * as SyncClientTokenUpdated from '../sdk-clients/sync/tokenUpdated';
 import * as TaskRouterReplaceCompleteTask from '../serverless/TaskRouter/CompleteTask';
+import * as Logger from './logger';
 import * as SendLogsToBrowserConsole from '../logger/sendLogsToBrowserConsole';
 // @ts-ignore
-// Carrega apenas index.ts de primeiro nível dentro de feature-library (./<feature>/index.ts)
-// Evita capturar index.ts internos como languages/index.ts que não representam uma feature
-const requireFeature = require.context('../../feature-library', true, /^\.\/[^/]+\/index\.ts$/);
-const features = requireFeature.keys().map(requireFeature);
-
-export default features;
+// eslint-disable-next-line import/no-useless-path-segments
+import features from '../../feature-library/*/index.ts';
 
 export const initFeatures = (flex: typeof Flex, manager: Flex.Manager) => {
   if (typeof features === 'undefined') {
@@ -37,9 +31,8 @@ export const initFeatures = (flex: typeof Flex, manager: Flex.Manager) => {
   for (const file of features) {
     // Each feature index file should export a `register` function for us to invoke
     if (!file.register) {
-      // Não é um index de feature válido; apenas log e segue
-      console.warn('Skipping module without register (not a feature):', file?.default ?? file);
-      continue;
+      console.error('Feature found, but its index file does not export a `register` function', file);
+      return;
     }
 
     try {
@@ -47,14 +40,11 @@ export const initFeatures = (flex: typeof Flex, manager: Flex.Manager) => {
 
       if (feature && feature.name) {
         loadFeature(flex, manager, feature);
-        addLoadedFeature(feature.name);
       }
     } catch (error) {
       console.error('Error loading feature:', error);
     }
   }
-
-  setLoadedFeaturesPopulated(true);
 
   // Register built-in hooks
   Actions.addHook(flex, manager, 'built-in TaskRouterService', TaskRouterReplaceCompleteTask);
@@ -67,7 +57,6 @@ export const initFeatures = (flex: typeof Flex, manager: Flex.Manager) => {
   PasteElements.init(flex);
   Reducers.init(manager);
   Strings.init(manager);
-  KeyboardShortcuts.init(flex, manager);
   Components.init(flex, manager);
   TeamsFilters.init(flex, manager);
 };
@@ -108,10 +97,6 @@ export const loadFeature = (flex: typeof Flex, manager: Flex.Manager, feature: F
 
     if (hook.jsClientHook) {
       JsClientEvents.addHook(flex, manager, name, hook);
-    }
-
-    if (hook.keyboardShortcutHook) {
-      KeyboardShortcuts.addHook(flex, manager, name, hook);
     }
 
     if (hook.loggerHook) {

@@ -10,8 +10,3 @@ export interface Worker {
   worker_sid: string;
   workspace_sid: string;
 }
-export interface Queue {
-  queue_name: string;
-  queue_sid: string;
-  workspace_sid: string;
-}

@@ -1,4 +1,5 @@
-import { Conversation, Message, Participant, Paginator } from '@twilio/conversations';
+import { Paginator } from 'twilio-chat/lib/interfaces/paginator';
+import { Conversation, Message, Participant } from '@twilio/conversations';
 
 interface ParticipantState {
   readonly source: Participant;

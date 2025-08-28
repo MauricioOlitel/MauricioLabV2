@@ -1,5 +1,3 @@
-import { EventEmitter } from 'events';
-
 import IncomingTransfer from './IncomingTransfer';
 import OutgoingTransfer from './OutgoingTransfer';
 
@@ -7,7 +5,7 @@ import OutgoingTransfer from './OutgoingTransfer';
 
 export type TaskAssignmentStatus = 'reserved' | 'assigned' | 'canceled' | 'wrapping' | 'completed' | 'transferring';
 
-export default interface Task extends EventEmitter {
+export default interface Task {
   addOns: any;
   age: number;
   attributes: TaskAttributes;
