@@ -25,6 +25,29 @@ module.exports = (config, { isProd, isDev, isTest }) => {
       ...config.module,
       rules: [
         ...config.module.rules,
+        // Transpile specific modern ESM packages that ship untranspiled optional chaining
+        {
+          test: /\.(js|mjs)$/,
+          include: [
+            path.dirname(require.resolve('emoji-mart/package.json')),
+            path.dirname(require.resolve('@emoji-mart/react/package.json')),
+          ],
+          use: {
+            loader: require.resolve('babel-loader'),
+            options: {
+              presets: [
+                [require.resolve('@babel/preset-env'), { targets: 'defaults' }],
+                require.resolve('@babel/preset-react'),
+              ],
+              plugins: [
+                // ensure optional chaining/nullish coalescing parsed if env preset target decides not to transpile
+                require.resolve('@babel/plugin-proposal-optional-chaining'),
+                require.resolve('@babel/plugin-proposal-nullish-coalescing-operator'),
+              ],
+              cacheDirectory: true,
+            },
+          },
+        },
         {
           test: /index\.ts$/,
           include: [path.join(__dirname, 'src/feature-library/')],

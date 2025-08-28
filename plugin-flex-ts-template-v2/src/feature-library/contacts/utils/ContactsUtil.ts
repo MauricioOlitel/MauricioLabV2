@@ -10,8 +10,8 @@ import {
   updateDirectoryContact,
   removeDirectoryContact,
   initDirectory,
-} from '../flex-hooks/state';
-import { Contact, HistoricalContact } from '../types';
+} from '../flex-hooks/state/state';
+import { Contact, HistoricalContact } from '../types/types';
 import {
   getRecentDaysToKeep,
   isRecentsEnabled,
@@ -19,7 +19,7 @@ import {
   isSharedDirectoryEnabled,
   isSharedDirectoryAgentEditable,
 } from '../config';
-import { getUserLanguage } from '../../../utils/configuration';
+import { getUserLanguage, getLoadedFeatures, getFeatureFlags } from '../../../utils/configuration';
 import SyncClient, { getAllSyncMapItems } from '../../../utils/sdk-clients/sync/SyncClient';
 import logger from '../../../utils/logger';
 
@@ -57,10 +57,10 @@ class ContactsUtil {
         this.manager.store.dispatch(addHistoricalContact(args.item.data));
       });
       map.on('itemRemoved', (args) => {
-        console.log(`Map item ${args.key} was removed`);
+        logger.debug(`[contacts] Map item ${args.key} was removed`);
       });
       map.on('itemUpdated', (args) => {
-        console.log(`Map item ${args.item.key} was updated`);
+        logger.debug(`[contacts] Map item ${args.item.key} was updated`);
       });
       map.on('removed', () => {
         this.manager.store.dispatch(clearRecents());
@@ -187,7 +187,14 @@ class ContactsUtil {
     }
   };
 
-  addContact = async (name: string, phoneNumber: string, notes: string, shared: boolean) => {
+  addContact = async (
+    name: string,
+    phoneNumber: string,
+    notes: string,
+    shared: boolean,
+    allowColdTransfer?: boolean,
+    allowWarmTransfer?: boolean,
+  ) => {
     if (!this.workerSid && !shared) {
       logger.error('[contacts] Error adding contact: No worker sid');
       return;
@@ -197,16 +204,76 @@ class ContactsUtil {
       return;
     }
     try {
-      const contact = {
+      const contact: Contact = {
         key: uuidv4(),
         name,
         phoneNumber,
         notes,
       };
+      if (shared) {
+        contact.allowColdTransfer = allowColdTransfer ?? true;
+        contact.allowWarmTransfer = allowWarmTransfer ?? true;
+      }
       const map = await SyncClient.map(`${CONTACTS_KEY}_${shared ? this.accountSid : this.workerSid}`);
       await map.set(contact.key, contact);
     } catch (error: any) {
       logger.error('[contacts] Error adding contact', error);
+    }
+  };
+
+  addContactFull = async (contact: Contact, shared: boolean) => {
+    if (!this.workerSid && !shared) {
+      logger.error('[contacts] Error adding contact: No worker sid');
+      return;
+    }
+    if (shared && !this.canEditShared()) {
+      logger.error('[contacts] User not authorized to modify shared contacts');
+      return;
+    }
+    try {
+      // Garante que exista uma key única
+      if (!contact.key) {
+        contact.key = uuidv4();
+      }
+      const map = await SyncClient.map(`${CONTACTS_KEY}_${shared ? this.accountSid : this.workerSid}`);
+      await map.set(contact.key, contact);
+    } catch (error: any) {
+      logger.error('[contacts] Error adding contact', error);
+    }
+  };
+
+  findContactByPhone = async (phoneNumber: string, shared: boolean): Promise<Contact | undefined> => {
+    const map = await SyncClient.map(`${CONTACTS_KEY}_${shared ? this.accountSid : this.workerSid}`);
+    const items = await getAllSyncMapItems(map);
+    return items.map(i => i.data as Contact).find(c => c.phoneNumber === phoneNumber);
+  };
+
+  addOrUpdateContactFull = async (contact: Contact, shared: boolean) => {
+    if (!this.workerSid && !shared) {
+      logger.error('[contacts] Error adding contact: No worker sid');
+      return;
+    }
+    if (shared && !this.canEditShared()) {
+      logger.error('[contacts] User not authorized to modify shared contacts');
+      return;
+    }
+    try {
+      // Verifica duplicidade pelo telefone
+      let existing;
+      if (contact.phoneNumber) {
+        existing = await this.findContactByPhone(contact.phoneNumber, shared);
+      }
+      if (existing) {
+        contact.key = existing.key; // Mantém a key original
+        await this.updateContact(contact, shared);
+        return contact;
+      } else {
+        if (!contact.key) contact.key = uuidv4();
+        const map = await SyncClient.map(`${CONTACTS_KEY}_${shared ? this.accountSid : this.workerSid}`);
+        await map.set(contact.key, contact);
+      }
+    } catch (error: any) {
+      logger.error('[contacts] Error adding/updating contact', error);
     }
   };
 
@@ -243,6 +310,11 @@ class ContactsUtil {
       logger.error('[contacts] Error updating contact', error);
     }
   };
+
+  shouldShowTransferOptions = (shared: boolean) =>
+    shared &&
+    getLoadedFeatures().includes('custom-transfer-directory') &&
+    (getFeatureFlags()?.features?.custom_transfer_directory?.external_directory?.enabled || false);
 }
 
 const contactsUtil = new ContactsUtil();

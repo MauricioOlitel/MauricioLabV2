@@ -16,24 +16,15 @@ export interface ListPhoneNumbersResponse {
 
 export interface ValidatePhoneNumberResponse {
   success: boolean;
-  lookupResponse: LookupResponse;
-}
-
-export interface LookupResponse {
-  callingCountryCode: string;
-  countryCode: string;
-  phoneNumber: string;
-  nationalFormat: string;
   valid: boolean;
-  validationErrors: Array<string>;
-  callerName: string;
-  simSwap: string;
-  callForwarding: string;
-  liveActivity: string;
-  lineTypeIntelligence: string;
-  identityMatch: string;
-  smsPumpingRisk: string;
-  url: string;
+  invalidReason?: string;
+  // When returned from serverless validate-phone-number function, a nested lookupResponse object may be present
+  // aligning with serverless/functions/common/flex/phone-numbers/validate-phone-number.js
+  lookupResponse?: {
+    valid?: boolean;
+    validationErrors?: string[];
+    [key: string]: any;
+  };
 }
 
 class PhoneNumberService extends ApiService {

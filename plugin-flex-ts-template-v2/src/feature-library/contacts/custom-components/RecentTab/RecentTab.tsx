@@ -15,10 +15,10 @@ import debounce from 'lodash/debounce';
 import ContactsUtil from '../../utils/ContactsUtil';
 import HistoricalContactRecord from './HistoricalContactRecord';
 import Paginator from '../Paginator';
-import { HistoricalContact } from '../../types';
+import { HistoricalContact } from '../../types/types';
 import AppState from '../../../../types/manager/AppState';
 import { reduxNamespace } from '../../../../utils/state';
-import { StringTemplates } from '../../flex-hooks/strings';
+import { StringTemplates } from '../../flex-hooks/strings/strings';
 
 export interface OwnProps {
   pageSize: number;
