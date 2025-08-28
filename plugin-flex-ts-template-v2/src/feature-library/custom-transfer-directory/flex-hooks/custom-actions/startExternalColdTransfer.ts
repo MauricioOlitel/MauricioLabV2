@@ -26,8 +26,12 @@ export const registerStartExternalColdTransfer = async () => {
         if (!validationCheck.success) {
           Notifications.showNotification(CustomTransferDirectoryNotification.PhoneNumberFailedValidationCheckRequest);
           return;
-        } else if (validationCheck.success && !validationCheck.lookupResponse?.valid) {
-          const errors = validationCheck.lookupResponse.validationErrors.join(', ');
+        } else if (
+          validationCheck.success &&
+          validationCheck.lookupResponse &&
+          validationCheck.lookupResponse.valid === false
+        ) {
+          const errors = (validationCheck.lookupResponse.validationErrors ?? []).join(', ');
           Notifications.showNotification(
             CustomTransferDirectoryNotification.PhoneNumberFailedValidationCheckWithErrors,
             {
