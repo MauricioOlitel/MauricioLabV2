@@ -18,13 +18,6 @@ export interface ValidatePhoneNumberResponse {
   success: boolean;
   valid: boolean;
   invalidReason?: string;
-  // When returned from serverless validate-phone-number function, a nested lookupResponse object may be present
-  // aligning with serverless/functions/common/flex/phone-numbers/validate-phone-number.js
-  lookupResponse?: {
-    valid?: boolean;
-    validationErrors?: string[];
-    [key: string]: any;
-  };
 }
 
 class PhoneNumberService extends ApiService {
