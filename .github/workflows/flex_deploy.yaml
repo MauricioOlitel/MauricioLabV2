@@ -254,5 +254,7 @@ jobs:
           cd $PLUGIN_FOLDER
           npm install
           twilio flex:plugins:deploy --changelog="Deploy from CI/CD for commit ${{ github.sha }}"
-          twilio flex:plugins:release --name="Release from CI/CD for commit ${{ github.sha }}" --description="Release from CI/CD for commit ${{ github.sha }}"
-    
+          twilio flex:plugins:release \
+            --enable-plugin plugin-flex-ts-template-v2@latest \
+            --name="Release from CI/CD for commit ${{ github.sha }}" \
+            --description="Release from CI/CD for commit ${{ github.sha }}"
