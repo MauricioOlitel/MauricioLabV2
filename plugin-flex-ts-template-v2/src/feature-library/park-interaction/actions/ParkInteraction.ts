@@ -30,19 +30,17 @@ export const parkInteraction = async (payload: ParkInteractionPayload) => {
   try {
     const agent = await getAgent(payload);
 
-    let conversationType = agent.channelType;
-    if (payload.task) {
-      const conversationState = StateHelper.getConversationStateForTask(payload.task);
-      if (conversationState) {
-        const conversationHelper = new ConversationHelper(conversationState);
-        conversationType = conversationHelper.conversationType;
-      }
+    let conversationType = 'unknown';
+    const conversationState = StateHelper.getConversationStateForTask(payload.task);
+    if (conversationState) {
+      const conversationHelper = new ConversationHelper(conversationState);
+  conversationType = conversationHelper.conversationType || 'unknown';
     }
     await ParkInteractionService.parkInteraction(
       agent.channelSid,
       agent.interactionSid,
-      agent.mediaProperties.conversationSid,
-      agent.participantSid,
+  agent.mediaProperties.conversationSid,
+  agent.participantSid,
       conversationType,
       payload.task.taskSid,
       payload.task.workflowSid,

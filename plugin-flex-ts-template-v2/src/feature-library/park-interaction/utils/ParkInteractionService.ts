@@ -13,7 +13,7 @@ export interface ParkedInteraction {
   interactionSid: string;
   participantSid: string;
   conversationSid: string;
-  channelType: string;
+  conversationType: string; // renamed from channelType (deprecated)
   taskSid: string;
   workflowSid: string;
   taskChannelUniqueName: string;
@@ -45,7 +45,7 @@ class ParkInteractionService extends ApiService {
     interactionSid: string,
     participantSid: string,
     conversationSid: string,
-    channelType: string,
+    conversationType: string,
     taskSid: string,
     workflowSid: string,
     taskChannelUniqueName: string,
@@ -59,7 +59,7 @@ class ParkInteractionService extends ApiService {
         interactionSid: encodeURIComponent(interactionSid),
         participantSid: encodeURIComponent(participantSid),
         conversationSid: encodeURIComponent(conversationSid),
-        channelType: encodeURIComponent(channelType),
+  conversationType: encodeURIComponent(conversationType),
         taskSid: encodeURIComponent(taskSid),
         workflowSid: encodeURIComponent(workflowSid),
         taskChannelUniqueName: encodeURIComponent(taskChannelUniqueName),

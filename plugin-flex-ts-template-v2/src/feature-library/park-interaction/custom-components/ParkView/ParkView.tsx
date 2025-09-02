@@ -1,4 +1,4 @@
-import { ConversationHelper, StateHelper } from "@twilio/flex-ui";
+// (Removed direct usage of ConversationHelper/StateHelper here; we rely on stored conversationType from parking time)
 import { useEffect, useState } from 'react';
 import { Box } from '@twilio-paste/core/box';
 import { Manager, Notifications, templates } from '@twilio/flex-ui';
@@ -63,11 +63,11 @@ const ParkView = () => {
           parkingDate = mapItem.dateUpdated;
         }
 
-        // Use TaskRouter channel name as the main descriptor (e.g. "Chat"), and if channelType is set too - append that for
-        // better identify types of interaction (e.g. "Chat (Messenger)")
+        // Build display text: TaskRouter channel + optional conversationType variant (e.g. Chat (Messenger))
         let channelDisplayText = `${data.taskChannelUniqueName[0].toUpperCase()}${data.taskChannelUniqueName.slice(1)}`;
-        if (data.channelType && data.channelType !== data.taskChannelUniqueName) {
-          channelDisplayText += ` (${data.channelType[0].toUpperCase()}${data.channelType.slice(1)})`;
+        const variant = (data as any).conversationType;
+        if (variant && variant !== data.taskChannelUniqueName) {
+          channelDisplayText += ` (${variant[0].toUpperCase()}${variant.slice(1)})`;
         }
 
         return {
