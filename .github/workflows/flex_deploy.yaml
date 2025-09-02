@@ -230,11 +230,8 @@ jobs:
         with:
           node-version: '20.18.1'
 
-      - name: install and setup twilio cli
-        run: |
-          npm install --ignore-scripts
-          npm install -g @twilio/cli@latest
-          twilio flex:plugins:upgrade-plugin --install
+      - name: Install Twilio CLI
+        run: npm install -g twilio-cli@latest
 
       - name: deploy and release flex-plugin
         run: |
