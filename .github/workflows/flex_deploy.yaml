@@ -65,7 +65,7 @@ jobs:
           node-version: '20.18.1'
           cache: 'npm'
       - name: Update Yarn
-          run: npm install -g yarn@1.22.22
+        run: npm install -g yarn@1.22.22
       - name: set github environment variables
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
