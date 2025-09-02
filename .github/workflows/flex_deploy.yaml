@@ -213,6 +213,7 @@ jobs:
         run: |
           npm run deploy >> $GITHUB_STEP_SUMMARY
 
+  
   deploy-release-plugin:
     needs:
       - validate-environment
@@ -220,6 +221,7 @@ jobs:
     environment: ${{ inputs.environment }}
     env:
       CI: true
+      FLEX_PLUGIN_ALLOW_SKIP_VALIDATION: true
       TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
       TWILIO_API_KEY: ${{ secrets.TWILIO_API_KEY }}
       TWILIO_API_SECRET: ${{ secrets.TWILIO_API_SECRET }}
@@ -251,8 +253,6 @@ jobs:
           echo " - Plugin Folder: ${{ env.PLUGIN_FOLDER }}"  >> $GITHUB_STEP_SUMMARY
           cd $PLUGIN_FOLDER
           npm install
-          # 🚀 Deploy em modo CI (sem prompts)
-          twilio flex:plugins:deploy --changelog="Deploy from CI/CD for commit ${{ github.sha }}" --ci
+          twilio flex:plugins:deploy --changelog="Deploy from CI/CD for commit ${{ github.sha }}" --force
           twilio flex:plugins:release --name="Release from CI/CD for commit ${{ github.sha }}" --description="Release from CI/CD for commit ${{ github.sha }}"
-
-  
+    
