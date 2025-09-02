@@ -230,8 +230,11 @@ jobs:
         with:
           node-version: '20.18.1'
 
-      - name: install twilio cli
-        run: npm install --ignore-scripts
+      - name: install and setup twilio cli
+        run: |
+          npm install --ignore-scripts
+          npm install -g @twilio/cli@latest
+          twilio flex:plugins:upgrade-plugin --install
 
       - name: deploy and release flex-plugin
         run: |
