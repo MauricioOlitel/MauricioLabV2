@@ -250,5 +250,5 @@ jobs:
           echo " - Plugin Folder: ${{ env.PLUGIN_FOLDER }}"  >> $GITHUB_STEP_SUMMARY
           cd $PLUGIN_FOLDER
           npm install
-          npm run deploy -- --changelog="Deploy from CI/CD for commit ${{ github.sha }}"
+          npm run deploy -- --changelog="Deploy from CI/CD for commit ${{ github.sha }}" --yes
           npm run release -- --name="Release from CI/CD for commit ${{ github.sha }}" --description="Release from CI/CD for commit ${{ github.sha }}"
