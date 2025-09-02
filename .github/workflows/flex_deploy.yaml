@@ -233,6 +233,9 @@ jobs:
       - name: Install Twilio CLI
         run: npm install -g twilio-cli@latest
 
+      - name: Upgrade Flex Plugin for v7
+        run: twilio flex:plugins:upgrade-plugin --install
+
       - name: deploy and release flex-plugin
         run: |
           echo "### Job summary" >> $GITHUB_STEP_SUMMARY
@@ -240,6 +243,5 @@ jobs:
           echo " - Plugin Folder: ${{ env.PLUGIN_FOLDER }}"  >> $GITHUB_STEP_SUMMARY
           cd $PLUGIN_FOLDER
           npm install
-          npm run install-flex-plugin
           npm run deploy -- --changelog="Deploy from CI/CD for commit ${{ github.sha }}"
           npm run release -- --name="Release from CI/CD for commit ${{ github.sha }}" --description="Release from CI/CD for commit ${{ github.sha }}"
