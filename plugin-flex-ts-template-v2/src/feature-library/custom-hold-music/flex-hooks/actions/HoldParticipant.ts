@@ -1,4 +1,5 @@
 import * as Flex from '@twilio/flex-ui';
+import { Actions } from "@twilio/flex-ui";
 
 import ProgrammableVoiceService from '../../../../utils/serverless/ProgrammableVoice/ProgrammableVoiceService';
 import { getHoldMusicUrl } from '../../config';
@@ -28,6 +29,10 @@ export const actionHook = function setHoldMusicBeforeHoldParticipant(flex: typeo
     const conferenceSid = payload.task.conference?.conferenceSid || payload.task.attributes?.conference?.sid;
     abortFunction();
     console.log('[custom-hold-music] Holding participant', participant.callSid);
-    await ProgrammableVoiceService.holdParticipant(conferenceSid, participant.callSid);
+    Actions.invokeAction("HoldParticipant", {
+      sid: payload.task.sid,
+      targetSid: payload.targetSid,
+      options: {}
+    });
   });
 };

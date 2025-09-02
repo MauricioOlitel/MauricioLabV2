@@ -1,6 +1,7 @@
 import { TaskHelper, Notifications, templates, Manager } from '@twilio/flex-ui';
 
 import { ParkInteractionNotification, UnparkInteractionNotification } from '../flex-hooks/notifications';
+import { ConversationHelper, StateHelper } from "@twilio/flex-ui";
 import { StringTemplates } from '../flex-hooks/strings';
 import ParkInteractionPayload, { UnparkInteractionPayload } from '../types/ParkInteractionPayload';
 import ParkInteractionService from '../utils/ParkInteractionService';
@@ -29,12 +30,20 @@ export const parkInteraction = async (payload: ParkInteractionPayload) => {
   try {
     const agent = await getAgent(payload);
 
+    let conversationType = agent.channelType;
+    if (payload.task) {
+      const conversationState = StateHelper.getConversationStateForTask(payload.task);
+      if (conversationState) {
+        const conversationHelper = new ConversationHelper(conversationState);
+        conversationType = conversationHelper.conversationType;
+      }
+    }
     await ParkInteractionService.parkInteraction(
       agent.channelSid,
       agent.interactionSid,
-      agent.participantSid,
       agent.mediaProperties.conversationSid,
-      agent.channelType,
+      agent.participantSid,
+      conversationType,
       payload.task.taskSid,
       payload.task.workflowSid,
       payload.task.taskChannelUniqueName,

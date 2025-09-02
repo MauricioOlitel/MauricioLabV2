@@ -2,6 +2,7 @@ import * as Flex from '@twilio/flex-ui';
 
 import ProgrammableVoiceService from '../../../../utils/serverless/ProgrammableVoice/ProgrammableVoiceService';
 import { isInternalCall } from '../../helpers/internalCall';
+import { Actions } from "@twilio/flex-ui";
 import { FlexActionEvent, FlexAction } from '../../../../types/feature-loader';
 
 export const actionEvent = FlexActionEvent.before;
@@ -19,7 +20,11 @@ export const actionHook = function handleInternalHoldCall(flex: typeof Flex, _ma
       ? task.attributes.conference.participants.worker
       : task.attributes.worker_call_sid;
 
-    await ProgrammableVoiceService.holdParticipant(conference, participant);
+    Actions.invokeAction("HoldParticipant", {
+      sid: task.sid,
+      targetSid: participant,
+      options: {}
+    });
     abortFunction();
   });
 };
