@@ -62,7 +62,10 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.18.1'
+          cache: 'npm'
+      - name: Update Yarn
+          run: npm install -g yarn@1.22.22
       - name: set github environment variables
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
@@ -93,7 +96,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.18.1'
       - name: set github environment variables
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
@@ -150,7 +153,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.18.1'
       - name: set github environment variables
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
@@ -191,7 +194,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.18.1'
       - name: set github environment variables
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
@@ -225,7 +228,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20.18.1'
 
       - name: install twilio cli
         run: npm install --ignore-scripts
