@@ -225,18 +225,25 @@ jobs:
       PLUGIN_FOLDER: plugin-flex-ts-template-v2
     steps:
       - uses: actions/checkout@v4
-      - name: setup node.js
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.18.1'
 
+      - name: Update Yarn
+        run: npm install -g yarn@1.22.22
+
       - name: Install Twilio CLI
         run: npm install -g twilio-cli@latest
 
-      - name: Upgrade Flex Plugin for v7
-        run: twilio flex:plugins:upgrade-plugin --install
+      - name: Install Flex Plugin for Twilio CLI
+        run: twilio plugins:install @twilio-labs/plugin-flex@latest
 
-      - name: deploy and release flex-plugin
+      - name: Upgrade Flex Plugin for v7
+        run: twilio flex:plugins:upgrade-plugin --install --yes
+
+      - name: Deploy and Release Flex Plugin
         run: |
           echo "### Job summary" >> $GITHUB_STEP_SUMMARY
           echo " - Environment: ${{ inputs.environment }}"  >> $GITHUB_STEP_SUMMARY
