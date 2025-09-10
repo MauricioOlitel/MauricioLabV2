@@ -143,9 +143,7 @@ const RecentTab = ({ pageSize }: OwnProps) => {
                   <DataGridHeader element="CONTACTS_TABLE_CELL">
                     <Template source={templates[StringTemplates.ContactInboundAddress]} />
                   </DataGridHeader>
-                  <DataGridHeader element="CONTACTS_TABLE_CELL">
-                    <Template source={templates[StringTemplates.ContactCustomerAddress]} />
-                  </DataGridHeader>
+                  {/* Customer address column removed per requirements */}
                   <DataGridHeader element="CONTACTS_TABLE_CELL">
                     <Template source={templates[StringTemplates.ContactName]} />
                   </DataGridHeader>
@@ -161,9 +159,7 @@ const RecentTab = ({ pageSize }: OwnProps) => {
                   <DataGridHeader element="CONTACTS_TABLE_CELL">
                     <Template source={templates[StringTemplates.ContactOutcome]} />
                   </DataGridHeader>
-                  <DataGridHeader element="CONTACTS_TABLE_CELL" textAlign="right">
-                    <Template source={templates[StringTemplates.ContactActions]} />
-                  </DataGridHeader>
+                  {/* Actions column removed per requirements */}
                 </DataGridRow>
               </DataGridHead>
               <DataGridBody>

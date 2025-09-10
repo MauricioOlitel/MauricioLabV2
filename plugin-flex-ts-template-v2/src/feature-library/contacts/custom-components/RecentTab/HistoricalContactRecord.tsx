@@ -19,6 +19,7 @@ export interface OwnProps {
 }
 
 const HistoricalContactRecord = ({ contact }: OwnProps) => {
+
   const {
     taskSid,
     channelType,
@@ -68,20 +69,21 @@ const HistoricalContactRecord = ({ contact }: OwnProps) => {
         </Flex>
       </DataGridCell>
       <DataGridCell element="CONTACTS_TABLE_CELL">{inboundAddress}</DataGridCell>
-      <DataGridCell element="CONTACTS_TABLE_CELL">{customerAddress}</DataGridCell>
       <DataGridCell element="CONTACTS_TABLE_CELL">
-        {name ? <span>{name}</span> : <Template source={templates[StringTemplates.ContactDefaultCustomer]} />}
+        {/* Show real customer name when available, otherwise fallback to inboundAddress or default label */}
+        {name ? (
+          <span>{name}</span>
+        ) : customerAddress ? (
+          <span>{customerAddress}</span>
+        ) : (
+          <Template source={templates[StringTemplates.ContactDefaultCustomer]} />
+        )}
       </DataGridCell>
       <DataGridCell element="CONTACTS_TABLE_CELL">{dateTime}</DataGridCell>
       <DataGridCell element="CONTACTS_TABLE_CELL">{taskDuration}</DataGridCell>
       <DataGridCell element="CONTACTS_TABLE_CELL">{queueName}</DataGridCell>
       <DataGridCell element="CONTACTS_TABLE_CELL">{outcome}</DataGridCell>
-      <DataGridCell element="CONTACTS_TABLE_CELL" textAlign="right">
-        <Flex vAlignContent="center" hAlignContent="right">
-          {notes && <NotesPopover notes={notes} />}
-          {channelType === 'voice' && <OutboundCallModal phoneNumber={customerAddress || ''} />}
-        </Flex>
-      </DataGridCell>
+  {/* Actions column removed per requirements */}
     </DataGridRow>
   );
 };
