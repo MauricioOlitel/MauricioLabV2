@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { templates, Template } from '@twilio/flex-ui';
+import React, { useEffect, useState, useMemo } from 'react';
+import { templates, Template, Manager } from '@twilio/flex-ui';
 import { useSelector } from 'react-redux';
 import { Button } from '@twilio-paste/core/button';
 import { Modal, ModalHeader, ModalBody, ModalFooter, ModalFooterActions } from '@twilio-paste/core/modal';
@@ -39,6 +39,8 @@ export interface OwnProps {
 
 
 const DirectoryTab = ({ shared, allowEdits, pageSize: initialPageSize }: OwnProps) => {
+  // Use central ContactsUtil logic (supports localStorage forceNonSupervisor) instead of duplicating role check
+  const canEdit = useMemo(() => allowEdits && ContactsUtil.isSupervisor(), [allowEdits]);
   const [whatsappTemplates, setWhatsappTemplates] = useState([]);
   const [showWhatsappPanel, setShowWhatsappPanel] = useState(false);
   const [panelContact, setPanelContact] = useState<Contact | null>(null);
@@ -151,6 +153,7 @@ const DirectoryTab = ({ shared, allowEdits, pageSize: initialPageSize }: OwnProp
   };
 
   const confirmImport = () => {
+    if (!canEdit) return; // safety
     if (!pendingImport) return;
     const contatosParaImportar = pendingImport;
     // Fecha o modal antes de iniciar o processamento para liberar a UI
@@ -187,6 +190,7 @@ const DirectoryTab = ({ shared, allowEdits, pageSize: initialPageSize }: OwnProp
   };
 
   const handleExcelImport = async (event: React.ChangeEvent<HTMLInputElement>, shared: boolean = true) => {
+    if (!canEdit) return; // safety
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -292,7 +296,7 @@ const DirectoryTab = ({ shared, allowEdits, pageSize: initialPageSize }: OwnProp
         <Heading as="h5" variant="heading50">
           <Template source={templates[StringTemplates.NoContacts]} />
         </Heading>
-        {allowEdits && (
+  {canEdit && (
           <Flex>
             <Button
               variant="primary"
@@ -337,7 +341,7 @@ const DirectoryTab = ({ shared, allowEdits, pageSize: initialPageSize }: OwnProp
               </Select>
 
             </Box>
-            {allowEdits && (
+            {canEdit && (
               <Flex>
                 <Button
                   variant="primary"
@@ -384,7 +388,7 @@ const DirectoryTab = ({ shared, allowEdits, pageSize: initialPageSize }: OwnProp
                 <ContactRecord
                   key={contact.key}
                   contact={contact}
-                  allowEdits={allowEdits}
+                  allowEdits={canEdit}
                   editContact={editContact}
                   deleteContact={deleteContact}
                   onNameClick={openDetailModal}

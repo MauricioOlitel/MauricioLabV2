@@ -36,6 +36,23 @@ class ContactsUtil {
 
   workerSid = this.manager.workerClient?.workerSid;
 
+  // Basic role check (Flex roles array contains roles like 'agent', 'supervisor', 'admin')
+  isSupervisor = () => {
+    try {
+      // Local override for testing: set localStorage.forceNonSupervisor = 'true' to force false
+      const forced = typeof window !== 'undefined' && window.localStorage?.getItem('forceNonSupervisor') === 'true';
+      const roles = this.manager.user.roles || [];
+      if (forced) {
+        // eslint-disable-next-line no-console
+        console.log('[contacts] forceNonSupervisor override ativo');
+        return false;
+      }
+      return roles.includes('supervisor') || roles.includes('admin');
+    } catch {
+      return false;
+    }
+  };
+
   canEditShared = () => {
     const { roles } = this.manager.user;
     return isSharedDirectoryAgentEditable() === true || roles.indexOf('admin') >= 0 || roles.indexOf('supervisor') >= 0;
@@ -350,6 +367,11 @@ class ContactsUtil {
     allowColdTransfer?: boolean,
     allowWarmTransfer?: boolean,
   ) => {
+    // Only supervisors/admin can add contacts (personal or shared)
+    if (!this.isSupervisor()) {
+      logger.error('[contacts] User not authorized to add contact');
+      return;
+    }
     if (!this.workerSid && !shared) {
       logger.error('[contacts] Error adding contact: No worker sid');
       return;
@@ -377,6 +399,10 @@ class ContactsUtil {
   };
 
   addContactFull = async (contact: Contact, shared: boolean) => {
+    if (!this.isSupervisor()) {
+      logger.error('[contacts] User not authorized to add contact');
+      return;
+    }
     if (!this.workerSid && !shared) {
       logger.error('[contacts] Error adding contact: No worker sid');
       return;
@@ -404,6 +430,10 @@ class ContactsUtil {
   };
 
   addOrUpdateContactFull = async (contact: Contact, shared: boolean) => {
+    if (!this.isSupervisor()) {
+      logger.error('[contacts] User not authorized to add/update contact');
+      return;
+    }
     if (!this.workerSid && !shared) {
       logger.error('[contacts] Error adding contact: No worker sid');
       return;
@@ -433,6 +463,10 @@ class ContactsUtil {
   };
 
   deleteContact = async (key: string, shared: boolean) => {
+    if (!this.isSupervisor()) {
+      logger.error('[contacts] User not authorized to remove contact');
+      return;
+    }
     if (!this.workerSid && !shared) {
       logger.error('[contacts] Error removing contact: No worker sid');
       return;
@@ -450,6 +484,10 @@ class ContactsUtil {
   };
 
   updateContact = async (contact: Contact, shared: boolean) => {
+    if (!this.isSupervisor()) {
+      logger.error('[contacts] User not authorized to update contact');
+      return;
+    }
     if (!this.workerSid && !shared) {
       logger.error('[contacts] Error updating contact: No worker sid');
       return;
