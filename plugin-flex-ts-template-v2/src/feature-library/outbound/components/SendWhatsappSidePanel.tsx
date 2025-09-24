@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SidePanel, Manager } from "@twilio/flex-ui";
+import { SidePanel, Manager, useFlexSelector } from "@twilio/flex-ui";
 import {
   Label,
   Select,
@@ -32,8 +32,11 @@ export const SendWhatsappSidePanel: React.FC<SendWhatsappSidePanelProps> = ({
   const [isSending, setIsSending] = useState(false);
   const [queueSid, setQueueSid] = useState("");
   const manager = Manager.getInstance();
-  const queuesList = (manager.store.getState().flex.realtimeQueues?.queuesList) || {};
-  const queueOptions = Object.values(queuesList) as any[]; // WorkerQueue objects
+  // Reactive subscription to queue list; ensures re-render when Flex populates realtimeQueues later
+  const queueOptions = useFlexSelector(state => {
+    const ql = state.flex?.realtimeQueues?.queuesList || {};
+    return Object.values(ql);
+  }) as any[];
 
   // Quando o painel abrir, zere os campos e preencha o número
   useEffect(() => {
