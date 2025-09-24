@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SidePanel } from "@twilio/flex-ui";
+import { SidePanel, Manager } from "@twilio/flex-ui";
 import {
   Label,
   Select,
@@ -30,12 +30,17 @@ export const SendWhatsappSidePanel: React.FC<SendWhatsappSidePanelProps> = ({
   const [toNumber, setToNumber] = useState(phoneNumber);
   const [contentTemplateSid, setContentTemplateSid] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [queueSid, setQueueSid] = useState("");
+  const manager = Manager.getInstance();
+  const queuesList = (manager.store.getState().flex.realtimeQueues?.queuesList) || {};
+  const queueOptions = Object.values(queuesList) as any[]; // WorkerQueue objects
 
   // Quando o painel abrir, zere os campos e preencha o número
   useEffect(() => {
     if (isOpen) {
       setToNumber(phoneNumber);
-      setContentTemplateSid("");
+  setContentTemplateSid("");
+  setQueueSid("");
     }
   }, [isOpen, phoneNumber]);
 
@@ -80,7 +85,8 @@ export const SendWhatsappSidePanel: React.FC<SendWhatsappSidePanelProps> = ({
         contentTemplateSid,
         messageType: "whatsapp",
         openChat: true,
-        routeToMe: true
+        routeToMe: true,
+        queueSid: queueSid || undefined
       });
 
       onClose();
@@ -149,6 +155,19 @@ export const SendWhatsappSidePanel: React.FC<SendWhatsappSidePanelProps> = ({
         <HelpText>
       Escolha um template aprovado para envio via WhatsApp. Mensagens personalizadas foram desabilitadas.
         </HelpText>
+    <Separator orientation="horizontal" verticalSpacing="space60" />
+    <Label htmlFor="select_queue_sid">Fila (Queue)</Label>
+      <Select
+        id="select_queue_sid"
+        value={queueSid}
+        onChange={e => setQueueSid(e.target.value)}
+      >
+        <Option value="">Selecione uma fila (opcional)</Option>
+        {queueOptions.map(q => (
+          <Option key={q.sid} value={q.sid}>{q.friendlyName || q.queueName || q.sid}</Option>
+        ))}
+      </Select>
+      <HelpText>Se selecionada, a tarefa outbound será roteada por esta fila.</HelpText>
     <Separator orientation="horizontal" verticalSpacing="space60" />
     <HelpText>Preencha apenas o template. O conteúdo será montado automaticamente.</HelpText>
       </Box>
